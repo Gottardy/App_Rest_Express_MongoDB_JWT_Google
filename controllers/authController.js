@@ -48,7 +48,17 @@ const loginAuth = async (req = request, res = response) => {
     }
 }
 
+const loginGoogle = async (req = request, res = response) => {
+    console.log('POST sended google login');
+    const {id_token} = req.body;
+
+    res.json({
+        msg:'goolge token',
+        id_token
+    });
+}
 
 module.exports = {
     loginAuth,
+    loginGoogle
 }
