@@ -7,6 +7,44 @@
     <title>Next Rest Server!</title>
 </head>
 <body>
-    <h1>Acceso Denegado!</h1>
+    <h1>Aplicacion Prueba API Rest MongoDB!</h1>
+    <section id="sigin">
+        <hr/>
+        <div id="sigin-google">
+                <script src="https://accounts.google.com/gsi/client" async defer></script>
+                <div id="g_id_onload"
+                   data-client_id="1083823592590-q15nnas5vfj54ah6kcmo96dsgdt9o4sm.apps.googleusercontent.com"
+                   data-callback="handleCredentialResponse"
+                   data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                   data-type="standard"
+                   data-size="large"
+                   data-theme="outline"
+                   data-text="sign_in_with"
+                   data-shape="rectangular"
+                   data-logo_alignment="left">
+                </div>
+        </div>
+        <div>Login normal</div>
+
+    </section>
+    <script>
+        function handleCredentialResponse(response) {
+        // decodeJwtResponse() is a custom function defined by you
+        // to decode the credential response.
+        //    const responsePayload = decodeJwtResponse(response.credential);
+      
+        //    console.log("ID: " + responsePayload.sub);
+        //    console.log('Full Name: ' + responsePayload.name);
+        //    console.log('Given Name: ' + responsePayload.given_name);
+        //    console.log('Family Name: ' + responsePayload.family_name);
+        //    console.log("Image URL: " + responsePayload.picture);
+        //    console.log("Email: " + responsePayload.email);
+        
+        // Google Token : ID_TOKEN
+        console.log('ID_TOKEN',response.credential);
+        }
+      </script>
 </body>
 </html>
