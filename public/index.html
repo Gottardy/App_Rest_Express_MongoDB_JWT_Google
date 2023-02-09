@@ -43,7 +43,22 @@
         //    console.log("Email: " + responsePayload.email);
         
         // Google Token : ID_TOKEN
-        console.log('ID_TOKEN',response.credential);
+        // console.log('ID_TOKEN',response.credential);
+
+            const body = {id_token: response.credential};
+
+            fetch('http://localhost:8081/api/auth/google',{
+                method: 'POST',
+                headers:{
+                    'Content-type':'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+            .then(resp => resp.json())
+            .then( resp =>{
+                console.log(resp);
+            })
+            .catch( console.warn);
         }
       </script>
 </body>
