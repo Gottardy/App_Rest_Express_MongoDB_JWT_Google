@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const {check} = require('express-validator');
 
-const {categorysGet, categorysPut,  crearCategoria, categorysDelete} = require('../controllers/categorysController');
+const {obtenerCategorias, obtenerCategoria, actualizarCategoria,  crearCategoria, eliminarCategoria} = require('../controllers/categorysController');
 const { esUnRolValido, existeCorreo, existeID } = require('../DB/validators.db');
 
 const { validarJWT, validarParametros, esAdminRol, tieneRol } = require('../middlewares');
@@ -10,9 +10,9 @@ const { validarJWT, validarParametros, esAdminRol, tieneRol } = require('../midd
 const router = Router();
 
 // Obtener todas las categorias - Publico
-router.get('/', categorysGet );
+router.get('/', obtenerCategorias );
 // Obtener una categoria por id - Publico
-router.get('/:id', categorysGet );
+router.get('/:id', obtenerCategoria );
 
 // Actualizar registro de categoria por Id - Privado - usuario con token valido
 router.put('/:id',[
@@ -22,7 +22,7 @@ router.put('/:id',[
     // check('correo','El correo enviado no es valido').isEmail(),
     // check('rol').custom( esUnRolValido ),
     // validarParametros
-] ,categorysPut );
+] ,actualizarCategoria );
 
 // Crear una categoria - privado - usuario con token valido
 router.post('/', [
@@ -40,6 +40,6 @@ router.delete('/:id',[
     // check('id','No es un ID valido').isMongoId(),
     // check('id').custom( existeID ),
     // validarParametros   
-], categorysDelete );
+], eliminarCategoria );
 
 module.exports = router;

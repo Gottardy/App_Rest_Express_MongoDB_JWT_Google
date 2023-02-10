@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 
 const Categoria = require('../models/categoria');
 
-const categorysGet = async (req = request, res = response) => {
+const obtenerCategorias = async (req = request, res = response) => {
   console.log('GET sended categorias');
     // Desesctruturando el query de los parametros 
     // Creamos la solicitud de Paginacion de resultados con usuarios con estado 'true'
@@ -28,7 +28,31 @@ const categorysGet = async (req = request, res = response) => {
     });
 }
 
-const categorysPut = async (req = request, res = response) => {
+const obtenerCategoria = async (req = request, res = response) => {
+  console.log('GET sended categorias');
+    // Desesctruturando el query de los parametros 
+    // Creamos la solicitud de Paginacion de resultados con usuarios con estado 'true'
+    // const {pag = 5, rang = 0} = req.query;
+    // const query = {estado: true};
+
+    // const [totalRegistrosBD, usuarios] = await Promise.all([
+    //   Usuario.countDocuments(query),
+    //   await Usuario.find( query )
+    //     .skip(Number(rang))
+    //     .limit(Number(pag))
+    // ])
+    // const totalRegistrosConsultados =  Object.keys(usuarios).length;
+
+    res.json({
+    // // msg: 'get API - Controller',
+    // totalRegistrosBD,
+    // totalRegistrosConsultados,
+    // usuarios
+    ok:'Todo Ok'
+    });
+}
+
+const actualizarCategoria = async (req = request, res = response) => {
   console.log('PUT sended categorias');
   // Recibiendo el parametro 'id' de la ruta y utilizandolo
   //   const id = req.params.id;
@@ -79,7 +103,7 @@ const crearCategoria = async (req, res = response) => {
     });
   }
 
-const categorysDelete = async (req, res = response) => {
+const eliminarCategoria = async (req, res = response) => {
   console.log('DELETED sended categorias');
   // Recibiendo el parametro 'id' de la ruta y utilizandolo
   // const id = req.params.id;
@@ -98,8 +122,9 @@ const categorysDelete = async (req, res = response) => {
 }
 
 module.exports = {
-    categorysGet,
-    categorysPut,
-    crearCategoria,
-    categorysDelete
-}
+  obtenerCategorias,
+  obtenerCategoria,
+  actualizarCategoria,
+  crearCategoria,
+  eliminarCategoria,
+};
