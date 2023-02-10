@@ -5,50 +5,40 @@ const bcrypt = require('bcryptjs');
 const Categoria = require('../models/categoria');
 
 const obtenerCategorias = async (req = request, res = response) => {
-  console.log('GET sended categorias');
+  console.log('GET sended categorias All');
     // Desesctruturando el query de los parametros 
     // Creamos la solicitud de Paginacion de resultados con usuarios con estado 'true'
-    // const {pag = 5, rang = 0} = req.query;
-    // const query = {estado: true};
+    const {pag = 5, rang = 0} = req.query;
+    const query = {estado: true};
 
-    // const [totalRegistrosBD, usuarios] = await Promise.all([
-    //   Usuario.countDocuments(query),
-    //   await Usuario.find( query )
-    //     .skip(Number(rang))
-    //     .limit(Number(pag))
-    // ])
-    // const totalRegistrosConsultados =  Object.keys(usuarios).length;
+    const [totalRegistrosBD, categorias] = await Promise.all([
+      Categoria.countDocuments(query),
+      await Categoria.find( query )
+        .skip(Number(rang))
+        .limit(Number(pag))
+    ])
+    const totalRegistrosConsultados =  Object.keys(categorias).length;
 
     res.json({
-    // // msg: 'get API - Controller',
-    // totalRegistrosBD,
-    // totalRegistrosConsultados,
-    // usuarios
-    ok:'Todo Ok'
+    // msg: 'get API - Controller',
+    ok:'Todo Ok',
+    totalRegistrosBD,
+    totalRegistrosConsultados,
+    categorias,    
     });
 }
 
 const obtenerCategoria = async (req = request, res = response) => {
-  console.log('GET sended categorias');
-    // Desesctruturando el query de los parametros 
-    // Creamos la solicitud de Paginacion de resultados con usuarios con estado 'true'
-    // const {pag = 5, rang = 0} = req.query;
-    // const query = {estado: true};
-
-    // const [totalRegistrosBD, usuarios] = await Promise.all([
-    //   Usuario.countDocuments(query),
-    //   await Usuario.find( query )
-    //     .skip(Number(rang))
-    //     .limit(Number(pag))
-    // ])
-    // const totalRegistrosConsultados =  Object.keys(usuarios).length;
-
+  console.log('GET sended categorias: Id');
+    // Recibiendo el parametro 'id' de la ruta y utilizandolo
+    const id = req.params.id;
+    const {uid, nombre,estado,usuario} =  await Categoria.findById( id )
+    // console.log(categoria)
     res.json({
-    // // msg: 'get API - Controller',
-    // totalRegistrosBD,
-    // totalRegistrosConsultados,
-    // usuarios
-    ok:'Todo Ok'
+    // msg: 'get API - Controller',
+    ok:'Todo Ok',
+    nombre,
+    estado
     });
 }
 
@@ -57,10 +47,10 @@ const actualizarCategoria = async (req = request, res = response) => {
   // Recibiendo el parametro 'id' de la ruta y utilizandolo
   //   const id = req.params.id;
 
-  //   // Desesctruturando el query de los parametros del body
+  // Desesctruturando el query de los parametros del body
   //   const { password, google, correo, ...restoDatos} = req.body;
 
-  //   // Encriptar de nuevo la nueva contraseña 
+  // Encriptar de nuevo la nueva contraseña 
   //   if (password) {
   //     const salt = bcrypt.genSaltSync(12);
   //     restoDatos.password = bcrypt.hashSync(password, salt);
@@ -79,8 +69,11 @@ const crearCategoria = async (req, res = response) => {
   console.log('POST sended categorias');
     // Desesctruturando el body
     const nombreCategoria  = req.body.nombre.toUpperCase();
-    const categoriaConsultada = await Categoria.findOne({nombreCategoria});
-    if(categoriaConsultada){
+    // Se toma el usuario del request que valida el token JWT
+    const usuario = req.usuarioAutenticado.id
+    const categoriaConsultada = await Categoria.findOne({nombre:nombreCategoria});
+
+    if(categoriaConsultada === nombreCategoria){
       return res.status(400).json({
         msg:`La categoria ${categoriaConsultada.nombre}, ya existe`
       })
@@ -88,8 +81,7 @@ const crearCategoria = async (req, res = response) => {
     // Generar la data a guardar en la BD
     const data = {
       nombre:nombreCategoria,
-      // Se toma el usuario del request que valida el token JWT
-      usuario:req.usuarioAutenticado.id
+      usuario
     }
     // instnciamos el objeto Categoria
     const nuevaCategoria = new Categoria(data);
