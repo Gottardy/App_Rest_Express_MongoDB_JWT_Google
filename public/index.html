@@ -11,7 +11,6 @@
     <section id="sigin">
         <hr/>
         <div id="sigin-google">
-                <script src="https://accounts.google.com/gsi/client" async defer></script>
                 <div id="g_id_onload"
                    data-client_id="1083823592590-q15nnas5vfj54ah6kcmo96dsgdt9o4sm.apps.googleusercontent.com"
                    data-callback="handleCredentialResponse"
@@ -26,25 +25,12 @@
                    data-logo_alignment="left">
                 </div>
         </div>
+        <div><button id="googlesingout">Sing Out</button></div>
         <div>Login normal</div>
 
     </section>
     <script>
         function handleCredentialResponse(response) {
-        // decodeJwtResponse() is a custom function defined by you
-        // to decode the credential response.
-        //    const responsePayload = decodeJwtResponse(response.credential);
-      
-        //    console.log("ID: " + responsePayload.sub);
-        //    console.log('Full Name: ' + responsePayload.name);
-        //    console.log('Given Name: ' + responsePayload.given_name);
-        //    console.log('Family Name: ' + responsePayload.family_name);
-        //    console.log("Image URL: " + responsePayload.picture);
-        //    console.log("Email: " + responsePayload.email);
-        
-        // Google Token : ID_TOKEN
-        // console.log('ID_TOKEN',response.credential);
-
             const body = {id_token: response.credential};
 
             fetch('http://localhost:8081/api/auth/google',{
@@ -57,9 +43,21 @@
             .then(resp => resp.json())
             .then( resp =>{
                 console.log(resp);
+                localStorage.setItem('email',resp.usuario.correo);
             })
             .catch( console.warn);
         }
+
+        const button = document.getElementById('googlesingout');
+        button.onclick = () =>{
+            // console.log(google.accounts.id);
+            google.accounts.id.disableAutoSelect();
+            google.accounts.id.revoke(localStorage.getItem('email'), done =>{
+                localStorage.clear();
+                location.reload();
+            });
+        }
       </script>
+      <script src="https://accounts.google.com/gsi/client" async defer></script>
 </body>
 </html>
