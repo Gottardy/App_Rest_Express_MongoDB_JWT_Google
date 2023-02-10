@@ -14,6 +14,7 @@ const obtenerCategorias = async (req = request, res = response) => {
     const [totalRegistrosBD, categorias] = await Promise.all([
       Categoria.countDocuments(query),
       await Categoria.find( query )
+        .populate('usuario', 'nombre')
         .skip(Number(rang))
         .limit(Number(pag))
     ])
@@ -32,13 +33,13 @@ const obtenerCategoria = async (req = request, res = response) => {
   console.log('GET sended categorias: Id');
     // Recibiendo el parametro 'id' de la ruta y utilizandolo
     const id = req.params.id;
-    const {uid, nombre,estado,usuario} =  await Categoria.findById( id )
+    const {uid, nombre,estado,usuario} =  await Categoria.findById( id ).populate('usuario', 'nombre')
     // console.log(categoria)
     res.json({
     // msg: 'get API - Controller',
     ok:'Todo Ok',
     nombre,
-    estado
+    usuario
     });
 }
 
