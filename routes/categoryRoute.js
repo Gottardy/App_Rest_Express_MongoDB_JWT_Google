@@ -40,8 +40,7 @@ router.post('/', [
 // Borrar una categoria por Id - privado - usuario administrador con token valido
 router.delete('/:id',[
     validarJWT,
-    // esAdminRol,
-    tieneRol('ADMIN_ROL','VENTAS_ROL'),
+    esAdminRol,
     check('id','No es un ID valido').isMongoId(),
     check('id').custom( existeIdCategoria ),
     validarParametros   
