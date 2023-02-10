@@ -96,18 +96,19 @@ const crearCategoria = async (req, res = response) => {
 const eliminarCategoria = async (req, res = response) => {
   console.log('DELETED sended categorias');
   // Recibiendo el parametro 'id' de la ruta y utilizandolo
-  // const id = req.params.id;
-  // const usuarioAutenticado = req.usuarioAutenticado;
+  const id = req.params.id;
+  const usuarioAutenticado = req.usuarioAutenticado;
 
-  // //id Logicamente borrado de la BD, actualizando el estado a false
-  // const usuarioEliminado = await Usuario.findByIdAndUpdate(id,{estado:false});
+  //id Logicamente borrado de la BD, actualizando el estado a false
+  const categoriaEliminada = await Categoria.findByIdAndUpdate(id,{estado:false});
 
 
   res.json({
-  //   // msg: "delete API - Controller",
-  //   usuarioAutenticado,
-  //   usuarioEliminado
-  ok:'Todo Ok'
+  // msg: "delete API - Controller",
+  ok:'Todo Ok',
+  usuarioAutenticado,
+  categoriaEliminada
+  
   });
 }
 
