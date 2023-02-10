@@ -21,12 +21,12 @@ router.get('/:id', [
 
 // Actualizar registro de categoria por Id - Privado - usuario con token valido
 router.put('/:id',[
-    // check('id','No es un ID valido').isMongoId(),
-    // check('id').custom( existeID ),
-    // check('password','El password es obligatorio y debe ser más de 8 letras').isLength({min:8}),
-    // check('correo','El correo enviado no es valido').isEmail(),
-    // check('rol').custom( esUnRolValido ),
-    // validarParametros
+    validarJWT,
+    check('id','No es un ID valido').isMongoId(),
+    check('id').custom( existeIdCategoria ),
+    check('nombre','El nombre es obligatorio y debe ser más de 3 letras').isLength({min:2}),
+    tieneRol('ADMIN_ROL','VENTAS_ROL'),
+    validarParametros
 ] ,actualizarCategoria );
 
 // Crear una categoria - privado - usuario con token valido
@@ -39,12 +39,12 @@ router.post('/', [
 
 // Borrar una categoria por Id - privado - usuario administrador con token valido
 router.delete('/:id',[
-    // validarJWT,
+    validarJWT,
     // esAdminRol,
-    // // tieneRol('ADMIN_ROL','VENTAS_ROL'),
-    // check('id','No es un ID valido').isMongoId(),
-    // check('id').custom( existeID ),
-    // validarParametros   
+    tieneRol('ADMIN_ROL','VENTAS_ROL'),
+    check('id','No es un ID valido').isMongoId(),
+    check('id').custom( existeIdCategoria ),
+    validarParametros   
 ], eliminarCategoria );
 
 module.exports = router;
