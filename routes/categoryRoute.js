@@ -2,7 +2,7 @@ const { Router } = require('express');
 const {check} = require('express-validator');
 
 const {obtenerCategorias, obtenerCategoria, actualizarCategoria,  crearCategoria, eliminarCategoria} = require('../controllers/categorysController');
-const { esUnRolValido, existeCorreo, existeID } = require('../DB/validators.db');
+const { esUnRolValido, existeCorreo, existeID, existeIdCategoria } = require('../DB/validators.db');
 
 const { validarJWT, validarParametros, esAdminRol, tieneRol } = require('../middlewares');
 
@@ -11,8 +11,13 @@ const router = Router();
 
 // Obtener todas las categorias - Publico
 router.get('/', obtenerCategorias );
+
 // Obtener una categoria por id - Publico
-router.get('/:id', obtenerCategoria );
+router.get('/:id', [
+    check('id','No es un ID valido').isMongoId(),
+    check('id').custom( existeIdCategoria ),
+    validarParametros
+], obtenerCategoria );
 
 // Actualizar registro de categoria por Id - Privado - usuario con token valido
 router.put('/:id',[
