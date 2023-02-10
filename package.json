@@ -1,5 +1,5 @@
 {
-  "name": "07-rest-server",
+  "name": "10-rest-server-mongodb-jwt-google",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
