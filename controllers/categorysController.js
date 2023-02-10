@@ -1,6 +1,4 @@
 const { request, response } = require('express');
-const bcrypt = require('bcryptjs');
-
 
 const Categoria = require('../models/categoria');
 
@@ -46,23 +44,22 @@ const obtenerCategoria = async (req = request, res = response) => {
 const actualizarCategoria = async (req = request, res = response) => {
   console.log('PUT sended categorias');
   // Recibiendo el parametro 'id' de la ruta y utilizandolo
-  //   const id = req.params.id;
+    const id = req.params.id;
 
   // Desesctruturando el query de los parametros del body
-  //   const { password, google, correo, ...restoDatos} = req.body;
+    const { estado, usuario, ...restoDatos} = req.body;
+  // Confirmo el formato del dato nombre en uppercase
+    restoDatos.nombre = restoDatos.nombre.toUpperCase();
+  // Confirmamos el usuario autenticado que esta realizando la actualizacion
+    restoDatos.usuario = req.usuarioAutenticado.id;
 
-  // Encriptar de nuevo la nueva contraseña 
-  //   if (password) {
-  //     const salt = bcrypt.genSaltSync(12);
-  //     restoDatos.password = bcrypt.hashSync(password, salt);
-  //   }
-
-  //   const usuario = await Usuario.findByIdAndUpdate(id, restoDatos);
+  // Guardar en la BD 
+    const categoria = await Categoria.findByIdAndUpdate(id, restoDatos);
 
     res.json({
-  //   // msg: 'put API - Controller',
-  //   usuario
-  ok:'Todo Ok'
+    // msg: 'put API - Controller',
+    ok:'Todo Ok',
+    categoria  
   });
 }
 
@@ -70,7 +67,7 @@ const crearCategoria = async (req, res = response) => {
   console.log('POST sended categorias');
     // Desesctruturando el body
     const nombreCategoria  = req.body.nombre.toUpperCase();
-    // Se toma el usuario del request que valida el token JWT
+    // Confirmamos el usuario autenticado que esta realizando la request que valida el token JWT
     const usuario = req.usuarioAutenticado.id
     const categoriaConsultada = await Categoria.findOne({nombre:nombreCategoria});
 
