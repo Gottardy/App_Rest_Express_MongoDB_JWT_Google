@@ -1,5 +1,6 @@
 const Role = require('../models/role');
 const usuario = require('../models/usuario');
+const categoria = require('../models/categoria');
 const mongoose = require('mongoose');
 
     //Verificar si el rol existe
@@ -26,10 +27,20 @@ const mongoose = require('mongoose');
             throw new Error (`El ID {${id}} enviado no esta registrado, por favor envie uno ID valido`);
          }
    }
+    //Verificar si el id categoria existe en la BD
+    const existeIdCategoria = async (id) =>{
+        const ID = mongoose.Types.ObjectId(id);
+        const idPresent = await categoria.findById(ID);  
+        // console.log(`${id}-id <--> ${idPresent.id}`);
+        if (id!==idPresent.id){
+            throw new Error (`El ID {${id}} enviado no esta registrado, por favor envie uno ID valido`);
+         }
+   }
     
 
 module.exports = {
     esUnRolValido,
     existeCorreo,
-    existeID
+    existeID,
+    existeIdCategoria
 }
