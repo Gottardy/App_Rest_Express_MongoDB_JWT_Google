@@ -79,7 +79,7 @@ const buscarProductos = async(termino = '', res = response) => {
     let totalRegistrosConsultados;
   
     if (esMongoID) {
-      productos = await Producto.findById(termino);
+      productos = await Producto.findById(termino).populate('categoria','nombre');
       totalRegistrosConsultados = productos ? 1 : 0;
     } else {
       // Si no es MongoId, validamos si el termino es un numero de precio Valido y lo buscamos
@@ -91,13 +91,13 @@ const buscarProductos = async(termino = '', res = response) => {
         productos = await Producto.find({
           $or: [{precio: value}],
           $and: [{estado: true}]
-        });
+        }).populate('categoria','nombre');
       } else {
         // Si no es un numero, validamos si el termino es un nombre y lo buscamos
         productos = await Producto.find({
           $or: [{nombre: expregTermino}],
           $and: [{estado: true}]
-        });
+        }).populate('categoria','nombre');
       }
   
       totalRegistrosConsultados = Object.keys(productos).length;
@@ -108,8 +108,33 @@ const buscarProductos = async(termino = '', res = response) => {
       totalRegistrosConsultados,
       results: productos || []
     });
-  };
+};
   
+const buscarRoles = async(termino = '', res = response)=>{
+    const esMongoID = mongoose.Types.ObjectId.isValid(termino);
+    
+    if (esMongoID) {
+        const roles = await Role.findById(termino);
+        return res.json({
+            // Enviamos losresultados encontrados utilizando la validacion ternaria
+           results: (roles) ? [roles]:[],
+        });
+    }
+    
+    const expregTermino = new RegExp(termino, 'i');
+    const roles = await Role.find({
+        $or:[
+            {nombre:expregTermino},
+        ],
+    });
+    const totalRegistrosConsultados =  Object.keys(roles).length;
+    res.json({
+        totalRegistrosConsultados,
+        results: roles,
+    });
+    
+    
+}
 
 const buscar = async (req = request, res = response) => {
     const {coleccion, termino}=req.params;
@@ -130,10 +155,7 @@ const buscar = async (req = request, res = response) => {
             buscarUsuarios(termino, res);
             break;
         case 'roles':
-            console.log(termino)
-            res.json({
-                ok:'todo ok',
-            });
+            buscarRoles(termino, res)
             break;
         default:
             res.status(500).json({
