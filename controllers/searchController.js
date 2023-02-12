@@ -11,7 +11,8 @@ const coleccionesPermitidas =[
     'usuarios',
     'categorias',
     'productos',
-    'roles'
+    'roles',
+    'productosPorCategoria',
 ];
 
 const buscarUsuarios = async(termino = '', res = response)=>{
@@ -132,6 +133,45 @@ const buscarRoles = async(termino = '', res = response)=>{
     
 }
 
+//Función buscar producto por categoría  
+const buscarProductosPorCategoria = async (termino = '', res = response) => {
+    try {
+      const isMongoId = mongoose.Types.ObjectId.isValid(termino)
+      if (isMongoId) {
+        console.log(termino.toString())
+        const productos = await Producto.find({ categoria: termino.toString() }).populate('categoria', 'nombre')
+        return res.status(200).json({
+          totalRegistrosConsultados: productos.length,
+          results: productos ? [productos] : [],
+        })
+      }
+   
+      const regex = new RegExp(termino, 'i')
+   
+      const categorias = await Categoria.find({ nombre: regex, estado: true })
+    
+      const categoriasIds = categorias.map((categoria) => categoria.id)
+   
+      const productos = await Producto.find({
+        categoria: {
+          $in: categoriasIds,
+        },
+        estado: true,
+      })
+      .populate('categoria', 'nombre')
+   
+      res.status(200).json({
+        totalRegistrosConsultados: productos.length,
+        productos,
+      })
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({
+        msg: 'Error en el servidor',
+      })
+    }
+  }
+
 const buscar = async (req = request, res = response) => {
     const {coleccion, termino}=req.params;
     console.log(`GET sended Busqueda All ${coleccion}`);
@@ -153,6 +193,9 @@ const buscar = async (req = request, res = response) => {
         case 'roles':
             buscarRoles(termino, res)
             break;
+        case 'productosPorCategoria':
+            buscarProductosPorCategoria(termino, res)
+            break
         default:
             res.status(500).json({
                 msg:`Busqueda no permitida para ${coleccion}`
