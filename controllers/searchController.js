@@ -9,7 +9,7 @@ const usuario = require('../models/usuario');
 
 const coleccionesPermitidas =[
     'usuarios',
-    'categoria',
+    'categorias',
     'productos',
     'roles'
 ];
@@ -43,9 +43,38 @@ const buscarUsuarios = async(termino = '', res = response)=>{
     
 }
 
+const buscarCategorias = async(termino = '', res = response)=>{
+    const esMongoID = mongoose.Types.ObjectId.isValid(termino);
+    
+    if (esMongoID) {
+        const categorias = await Categoria.findById(termino);
+        return res.json({
+            // Enviamos losresultados encontrados utilizando la validacion ternaria
+           results: (categorias) ? [categorias]:[],
+        });
+    }
+    // Nos apoyamos con la funcionalidad de la libreria RegExp para crear una expresion regular insensible a mayus/minus
+    const expregTermino = new RegExp(termino, 'i');
+    const categorias = await Categoria.find({
+        $or:[
+            {nombre:expregTermino},
+        ],
+        $and:[
+            {estado: true}
+        ]
+    });
+    const totalRegistrosConsultados =  Object.keys(categorias).length;
+    res.json({
+        totalRegistrosConsultados,
+        results: categorias,
+    });
+    
+    
+}
+
 const buscar = async (req = request, res = response) => {
-    console.log('GET sended Busqueda All');
     const {coleccion, termino}=req.params;
+    console.log(`GET sended Busqueda All ${coleccion}`);
     if(!coleccionesPermitidas.includes(coleccion)){
         return res.status(400).json({
            msg:`Las colecciones permitidas ${coleccionesPermitidas}`
@@ -53,10 +82,7 @@ const buscar = async (req = request, res = response) => {
     }
     switch (coleccion) {
         case 'categorias':
-            console.log(termino)
-            res.json({
-                ok:'todo ok',
-            });
+            buscarCategorias(termino, res);
             break;
         case 'productos':
             console.log(termino)
@@ -65,10 +91,6 @@ const buscar = async (req = request, res = response) => {
             });
             break;
         case 'usuarios':
-            // console.log(termino)
-            // res.json({
-            //     ok:'todo ok',
-            // });
             buscarUsuarios(termino, res);
             break;
         case 'roles':
