@@ -122,11 +122,7 @@ const buscarRoles = async(termino = '', res = response)=>{
     }
     
     const expregTermino = new RegExp(termino, 'i');
-    const roles = await Role.find({
-        $or:[
-            {nombre:expregTermino},
-        ],
-    });
+    const roles = await Role.find({rol:expregTermino});
     const totalRegistrosConsultados =  Object.keys(roles).length;
     res.json({
         totalRegistrosConsultados,
