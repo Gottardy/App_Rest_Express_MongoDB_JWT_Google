@@ -5,7 +5,7 @@ const Usuario = require('../models/usuario')
 const Categoria = require('../models/categoria')
 const Producto = require('../models/producto')
 const Role = require('../models/role');
-const usuario = require('../models/usuario');
+
 
 const coleccionesPermitidas =[
     'usuarios',
@@ -72,6 +72,45 @@ const buscarCategorias = async(termino = '', res = response)=>{
     
 }
 
+const buscarProductos = async(termino = '', res = response) => {
+    // Validamos si el termino es un Mongo Id Valido y lo buscamos
+    const esMongoID = mongoose.Types.ObjectId.isValid(termino);    
+    let productos;
+    let totalRegistrosConsultados;
+  
+    if (esMongoID) {
+      productos = await Producto.findById(termino);
+      totalRegistrosConsultados = productos ? 1 : 0;
+    } else {
+      // Si no es MongoId, validamos si el termino es un numero de precio Valido y lo buscamos
+      // Nos apoyamos con la funcionalidad de la libreria RegExp para crear una expresion regular insensible a mayus/minus
+      const expregTermino = new RegExp(termino, 'i');
+      const value = expregTermino.exec(termino)[0];
+  
+      if (!isNaN(value)) {
+        productos = await Producto.find({
+          $or: [{precio: value}],
+          $and: [{estado: true}]
+        });
+      } else {
+        // Si no es un numero, validamos si el termino es un nombre y lo buscamos
+        productos = await Producto.find({
+          $or: [{nombre: expregTermino}],
+          $and: [{estado: true}]
+        });
+      }
+  
+      totalRegistrosConsultados = Object.keys(productos).length;
+    }
+  
+    res.json({
+      ok: 'todo ok',
+      totalRegistrosConsultados,
+      results: productos || []
+    });
+  };
+  
+
 const buscar = async (req = request, res = response) => {
     const {coleccion, termino}=req.params;
     console.log(`GET sended Busqueda All ${coleccion}`);
@@ -85,10 +124,7 @@ const buscar = async (req = request, res = response) => {
             buscarCategorias(termino, res);
             break;
         case 'productos':
-            console.log(termino)
-            res.json({
-                ok:'todo ok',
-            });
+            buscarProductos(termino, res);
             break;
         case 'usuarios':
             buscarUsuarios(termino, res);
