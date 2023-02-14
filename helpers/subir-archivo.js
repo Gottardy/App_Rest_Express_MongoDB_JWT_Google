@@ -10,7 +10,7 @@ const subirArchivo = (files, extensionValidas = ['png', 'jpg', 'jpeg', 'gif'], n
         const extension = archivoCortado[archivoCortado.length - 1];
         // Las extensiones que permitiremos subir
         if (!extensionValidas.includes(extension)) {
-            return reject('Extension no es permitida');
+            return reject(`Extension '${extension}' no es permitida`);
         }
         // Creamos un nombre aleatorio para el archivo que se sube al directorio
         const nuevoNombre = uuidv4() + '.' + extension;
@@ -21,7 +21,7 @@ const subirArchivo = (files, extensionValidas = ['png', 'jpg', 'jpeg', 'gif'], n
             if (err){
               return reject(err);  
             }
-            resolve(uploadPath);
+            resolve(nuevoNombre);
         });
     });
 
