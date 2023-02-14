@@ -1,4 +1,5 @@
 const path = require('path');
+const {v4:uuidv4} = require('uuid');
 const { request, response } = require('express');
 
 const cargarArchivo = async (req = request, res = response) =>{
@@ -17,16 +18,17 @@ const cargarArchivo = async (req = request, res = response) =>{
   if (!extensionValidas.includes(extension)) {
     return res.status(400).json({msg:'Extension no es permitida'});
   }
-
-  const uploadPath = path.join(__dirname,'../uploads/',archivo.name);
+// Creamos un nombre aleatorio para el archivo que se sube al directorio
+  const nuevoNombre = uuidv4()+'.'+extension;
+  const uploadPath = path.join(__dirname,'../uploads/',nuevoNombre);
 
   // Use el método mv() para colocar el archivo en algún lugar de su servidor
-//   archivo.mv(uploadPath, (err) =>{
-//     if (err)
-//       return res.status(500).json({err});
+  archivo.mv(uploadPath, (err) =>{
+    if (err)
+      return res.status(500).json({err});
 
-//     res.json({msg:'File uploaded! =>'+uploadPath});
-//   });
+    res.json({msg:'File uploaded! =>'+uploadPath});
+  });
 }
 
 module.exports ={
