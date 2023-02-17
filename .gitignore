@@ -1,5 +1,7 @@
 node_modules/
-uploads/*.*
+uploads/*.*/
+uploads/productos/*.*
+uploads/usuarios/*.*/
 uploads/detodo/
 package-lock.json
 pnpm-lock.yaml
