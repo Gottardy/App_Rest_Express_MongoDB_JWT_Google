@@ -48,10 +48,20 @@ const mongoose = require('mongoose');
          }
    }
 
+    // validar colecciones permitidas
+    const coleccionesPermitidas = (coleccion ='', colecciones =[]) =>{
+        const estaIncluida = colecciones.includes(coleccion)
+        if (!estaIncluida) {
+            throw new Error (`La colecion {${coleccion}} enviada no esta registrada en las colecciones {${colecciones}}`);
+        }
+        return true;
+    }
+
 module.exports = {
     esUnRolValido,
     existeCorreo,
     existeID,
     existeIdCategoria,
-    existeIdProducto
+    existeIdProducto,
+    coleccionesPermitidas
 }
