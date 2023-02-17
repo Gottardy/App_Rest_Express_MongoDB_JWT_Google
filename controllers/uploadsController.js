@@ -1,13 +1,12 @@
+const path = require('path') ;
+const fs = require('fs');
 const { request, response } = require('express');
+
 const {subirArchivo} = require('../helpers/subir-archivo');
 const Usuario = require('../models/usuario');
 const Producto = require('../models/producto');
 
 const cargarArchivo = async (req = request, res = response) =>{
-
-  // if (!req.files || Object.keys(req.files).length === 0 || !req.files.archivo) {
-  //   return res.status(400).json({msg:'No se cargaron archivos.'});
-  // }
   
   try {
     // Subir Archivos formato Imagenes ['png', 'jpg', 'jpeg', 'gif'] pero se le puede agregar otros tipos para diferentes archivos
@@ -25,9 +24,7 @@ const cargarArchivo = async (req = request, res = response) =>{
 }
 
 const actualizarImagen = async (req = request, res = response) =>{
-  // if (!req.files || Object.keys(req.files).length === 0 || !req.files.archivo) {
-  //   return res.status(400).json({msg:'No se cargaron archivos.'});
-  // }  
+
   const {id, coleccion} = req.params;
   let modelo;
   switch (coleccion) {
@@ -55,8 +52,17 @@ const actualizarImagen = async (req = request, res = response) =>{
       })
   }
 
+  // limpiar imagenes previas
+  if (modelo.img) {
+    const rutaImgen = path.join(__dirname,'../uploads',coleccion, modelo.img);
+    if(fs.existsSync(rutaImgen)){
+      fs.unlinkSync(rutaImgen);
+      console.log('imagen anterior:'+modelo.img);
+    }
+  }
+
   modelo.img = await subirArchivo(req.files, ['png', 'jpg', 'jpeg', 'gif', 'svg'], coleccion);
-   await modelo.save();
+  await modelo.save();
 
   res.json({
     modelo
