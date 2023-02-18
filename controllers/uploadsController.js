@@ -57,7 +57,7 @@ const actualizarImagen = async (req = request, res = response) =>{
     const rutaImgen = path.join(__dirname,'../uploads',coleccion, modelo.img);
     if(fs.existsSync(rutaImgen)){
       fs.unlinkSync(rutaImgen);
-      console.log('imagen anterior:'+modelo.img);
+      // console.log('imagen anterior:'+modelo.img);
     }
   }
 
@@ -69,7 +69,47 @@ const actualizarImagen = async (req = request, res = response) =>{
   });
 }
 
+const mostrarImagen = async (req = request, res = response) =>{
+  const {id, coleccion} = req.params;
+  let modelo;
+  switch (coleccion) {
+    case 'usuarios':
+      modelo = await Usuario.findById(id);
+      if (!modelo) {
+        return res.status(400).json({
+          msg:`No existe un usuario con el id :{${id}}`
+        });
+      }
+
+      break;
+    case 'productos':
+      modelo = await Producto.findById(id);
+      if (!modelo) {
+        return res.status(400).json({
+          msg:`No existe un producto con el id :{${id}}`
+        });
+      }
+      break;
+  
+    default:
+      return res.status(500).json({
+        msg:'Validacion de coleccion erronea'
+      })
+  }
+
+  if (modelo.img) {
+    const rutaImgen = path.join(__dirname,'../uploads',coleccion, modelo.img);
+    if(fs.existsSync(rutaImgen)){
+     return res.sendFile(rutaImgen);
+    }
+  }
+
+  const rutaImgenPlaceHolder = path.join(__dirname,'../assets', 'No-Image-miniPlaceholder.jpg');
+  res.sendFile(rutaImgenPlaceHolder);
+}
+
 module.exports ={
     cargarArchivo,
-    actualizarImagen
+    actualizarImagen,
+    mostrarImagen
 }
